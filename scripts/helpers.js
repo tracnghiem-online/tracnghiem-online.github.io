@@ -1,8 +1,8 @@
 function toTime(seconds) {
     seconds = seconds > 0? seconds: 0;
-  var date = new Date(null);
-  date.setSeconds(seconds);
-  return date.toISOString().substr(11, 8);
+    var date = new Date(null);
+    date.setSeconds(seconds);
+    return date.toISOString().substr(11, 8);
 }
 
 function shuffleObject (obj) {
@@ -21,19 +21,25 @@ function arrayToObject(arr, def_value = ''){
     }, {});
 }
 
-let xhr = new XMLHttpRequest()
-function ajax(url, method = 'GET', data = {}, success = new Function, error = new Function){
-    xhr.open(method, url, true)
-    xhr.onerror = error;
-    xhr.setRequestHeader('Content-type', 'application/json; charset=UTF-8')
-    xhr.send(JSON.stringify(data));
-    xhr.onload = function (e) {
-        if(xhr.status === 200 && xhr.readyState === 4) {
-            success(xhr.responseText);
-        }else{
-            error()
-        }
+function ajax(url, method = 'GET', data, success = new Function, error = new Function){
+
+    let f;
+
+    if(method == 'GET'){
+        data = new URLSearchParams(data).toString();
+        f = fetch(url+data);
     }
+    else
+        f = fetch(url, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method,
+            body: JSON.stringify(data)
+        });
+        
+    f.then(res=> res.json()).then(success).catch(error);
 }
 
 function _$(type, inner_html, attrs){
