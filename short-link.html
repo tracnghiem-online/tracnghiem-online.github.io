@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Short Link</title>
+	<style type="text/css">
+		.link-result{
+			display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    border: 1px solid;
+		    padding: 4px;
+		    border-radius: 4px;
+		    background: #EEEEEE;
+		}
+		.link-result a{
+			white-space: nowrap;
+		    text-overflow: ellipsis;
+		    max-width: 125px;
+		    overflow: hidden;
+		    display: inline-block;
+		    color: #03A9F4;
+		    text-decoration: none;
+		}
+		.link-result label{
+			cursor: pointer;
+		}
+		.tooltip{
+			top: -15px !important;
+		}
+	</style>
+</head>
+<body>
+
+	<script type="text/javascript" src="helpers.js"></script>
+	<script type="text/javascript" src="Modal.js"></script>
+	<script type="text/javascript">
+		function Tooltip(){
+			let e_tooltip = new _$('label', '', {class: "error"});
+			let modal = new Modal(e_tooltip);
+			let to_show;
+
+			modal.target.classList.add('tooltip');
+			// modal.hide()
+
+			function show(text, n_wait = 1400){
+				e_tooltip.innerHTML = text;
+				// modal.target.style.top = "8px";
+				hide();
+				modal.show();
+				to_show = setTimeout(modal.hide, n_wait);
+			}
+
+			function hide(){
+				clearTimeout(to_show);
+				modal.hide();
+			}
+
+			return {
+				target: modal.target,
+				show, hide
+			}
+		}
+		let PopupShort = function(){
+			let e_link = new _$('input', "", {value: ''});
+			let e_result = new _$('a', "...", {target: '_blank', value: ''});
+			let e_copy = new _$('label', 'Copy', {});
+			let e_batdau = new _$('button', 'Generate', {class: 'btn'});
+			let e_tooltip = new Tooltip;
+
+			let e_form = rawHtml(`
+				<form class="popup_login">
+				$4
+					<div class="group-control">
+						<label>Nhập Link Google Sheet</label>
+						$0
+					</div>
+					<div class="group-control">
+						<label>Kết quả</label>
+						<div class="link-result">
+							$1 $2
+						</div>
+					</div>
+					<div class="btn-group">
+						$3
+					</div>
+				</form>
+			`, e_link, e_result, e_copy, e_batdau, e_tooltip.target)[0];
+
+			let modal = new Modal(e_form);
+
+			e_tooltip.hide();
+
+			e_link.onfocus = function(){
+				e_link.select();
+				e_link.setSelectionRange(0, 99999);
+			}
+
+			e_copy.onclick = function(){
+				 navigator.clipboard.writeText(e_result.href);
+				 e_copy.innerHTML = 'Copied';
+				 setTimeout(()=>{ e_copy.innerHTML = 'Copy'; }, 1000);
+			}
+
+			return {
+				target: modal.target,
+				modal,
+				set onsubmit(f){ e_form.onsubmit = function(e){
+					e_result.href = e_result.innerHTML = '';
+					e.preventDefault();
+					f(e, e_link, e_result, e_tooltip);
+				} }
+			}
+		}
+		const URI = "http://localhost/tracnghiem/public/link";
+
+		let popup_short = new PopupShort();
+		popup_short.onsubmit = function(e, e_link, e_result, e_tooltip){
+			let link = e_link.value;
+			ajax(`${URI}`, 'POST', {sheet_url: link}, function(data){
+				try{
+					let {id, sheet_id} = JSON.parse(data);
+					e_result.href = e_result.innerHTML = `./?id=${id}&is_app=1`	
+				}catch(e){
+					e_tooltip.show('Sai đường dẫn!');
+				}
+			}, function(){
+				e_tooltip.show('Lỗi dữ liệu.');
+			});
+		}
+
+		document.body.append(popup_short.target)
+	</script>
+
+</body>
+</html>

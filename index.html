@@ -1,0 +1,32 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Trac nghiem</title>
+	<script type="text/javascript" src="TracNghiemApp.min.js"></script>
+
+	<style type="text/css">
+		body{
+			margin: 0;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+		}
+		*{
+			box-sizing: border-box;
+		}
+	</style>
+	
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		let url = new URL(location.href);
+		let id = url.searchParams.get("id") || 'b';
+		let is_app = url.searchParams.get("is_app");
+
+		document.body.append(TracNghiemApp(id, is_app).target)
+
+	</script>
+
+</body>
+</html>
