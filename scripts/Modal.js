@@ -1,10 +1,15 @@
 function Modal(e_content, options = {}){
 
-	let {offset_close, btn_close} = options;
+	let {offset_close, btn_close, no_container} = options;
 
 	let e_btn_close = new _$('label', 'x', {class: 'modal-close'});
 
-	let target = rawHtml(`<div class="modal"><div class="modal-container">$0 ${btn_close? '$1': ''}</div></div>`, e_content, e_btn_close)[0];
+	let html = `<div class="modal"><div class="modal-container">$0 ${btn_close? '$1': ''}</div></div>`;
+
+	if(no_container)
+		html = `<div class="modal">$0 ${btn_close? '$1': ''}</div>`
+
+	let target = rawHtml(html, e_content, e_btn_close)[0];
 
 	function show(){
 		target.style.display = '';

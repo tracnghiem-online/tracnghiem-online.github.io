@@ -17,7 +17,7 @@
 		.link-result a{
 			white-space: nowrap;
 		    text-overflow: ellipsis;
-		    max-width: 125px;
+		    max-width: 130px;
 		    overflow: hidden;
 		    display: inline-block;
 		    color: #03A9F4;
@@ -27,7 +27,7 @@
 			cursor: pointer;
 		}
 		.tooltip{
-			top: -15px !important;
+			top: -24px !important;
 		}
 	</style>
 </head>
@@ -113,18 +113,17 @@
 				} }
 			}
 		}
+	
 		const URI = "https://tracnghiem-online.xyz/api/short-links";
 
 		let popup_short = new PopupShort();
 		popup_short.onsubmit = function(e, e_link, e_result, e_tooltip){
 			let link = e_link.value;
 			ajax(`${URI}`, 'POST', {sheet_url: link}, function(data){
-				try{
-					let {id, sheet_id} = JSON.parse(data);
-					e_result.href = e_result.innerHTML = `./?id=${id}&is_app=1`	
-				}catch(e){
-					e_tooltip.show('Sai đường dẫn!');
-				}
+				let {id, sheet_id} = data;
+				if(!id)
+					return e_tooltip.show('Sai đường dẫn!');
+				e_result.href = e_result.innerHTML = `./?id=${id}&is_app=1`
 			}, function(){
 				e_tooltip.show('Lỗi dữ liệu.');
 			});
