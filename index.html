@@ -1,0 +1,36 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Trắc Nghiệm Online</title>
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+	<link rel="image_src" href="images/thumbnail.PNG">
+	<script type="text/javascript" src="scripts/TracNghiemApp.min.js"></script>
+
+	<style type="text/css">
+		body{
+			margin: 0;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+		}
+		*{
+			box-sizing: border-box;
+		}
+	</style>
+	
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		let url = new URL(location.href);
+		let id = url.searchParams.get("id");
+		let is_app = url.searchParams.get("preview");
+
+		let tracnghiem = TracNghiem(id, !is_app);
+
+		document.body.append(tracnghiem.target)
+
+	</script>
+
+</body>
+</html>
